@@ -95,6 +95,9 @@ svg.icon { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: no
 .shell {
   display: grid;
   grid-template-columns: var(--rail-width) minmax(0, 1fr);
+  /* Ligne bornée à la hauteur du panneau : sans elle, la grille grandit avec le
+     contenu et la zone .content ne peut jamais défiler. */
+  grid-template-rows: minmax(0, 1fr);
   height: 100vh;
 }
 
@@ -149,7 +152,7 @@ svg.icon { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: no
 /* Zone principale                                                     */
 /* ------------------------------------------------------------------ */
 
-.main { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); min-width: 0; position: relative; }
+.main { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); min-width: 0; min-height: 0; position: relative; }
 
 .topbar {
   display: flex; align-items: center; gap: 10px;
@@ -187,6 +190,14 @@ svg.icon { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: no
 h1 { margin: 0; font-size: 28px; line-height: 1.1; font-weight: 750; letter-spacing: -0.025em; text-wrap: balance; }
 .section-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
 .section-head h2 { margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -0.015em; }
+.row-arrows { display: flex; gap: 6px; margin-left: 4px; }
+.row-arrows[hidden] { display: none; }
+.section-head .more + .row-arrows { margin-left: 4px; }
+.section-head h2 + .row-arrows { margin-left: auto; }
+.row-arrows .icon-button { width: 30px; height: 30px; }
+.row-arrows .icon-button .icon { width: 17px; height: 17px; }
+.rail-scroll.is-dragging { cursor: grabbing; scroll-snap-type: none; }
+.rail-scroll.is-dragging * { pointer-events: none; }
 .section-head .more { margin-left: auto; border: 0; background: none; color: var(--ink-3); font-weight: 600; font-size: 13px; padding: 0; }
 .section-head .more:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
 .lede { margin: 6px 0 0; color: var(--ink-2); max-width: 60ch; }

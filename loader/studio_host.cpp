@@ -24,6 +24,7 @@
 #include <string>
 
 #include "WebView2.h"
+#include "WebView2EnvironmentOptions.h"
 #include "loader_internal.h"
 #include "store.h"
 #include "updater.h"
@@ -96,6 +97,21 @@ Side g_side = Side::Right;
 
 ComPtr<ICoreWebView2Controller> g_controller;
 ComPtr<ICoreWebView2> g_webView;
+
+/**
+ * Chromium détecte mal l'occultation d'un panneau possédé par une fenêtre Qt
+ * (surtout à cheval entre deux écrans) et se croit masqué : il cesse alors de
+ * redessiner, ce qui fige le défilement. On désactive ce calcul et on pilote
+ * la visibilité explicitement avec setWebViewVisible().
+ */
+constexpr wchar_t kBrowserArguments[] = L"--disable-features=CalculateNativeWinOcclusion";
+
+/** Indique à WebView2 si le panneau est réellement affiché (obligatoire quand on le cache/réaffiche). */
+void setWebViewVisible(bool visible) {
+    if (g_controller != nullptr) {
+        g_controller->put_IsVisible(visible ? TRUE : FALSE);
+    }
+}
 
 HINSTANCE moduleInstance() {
     HMODULE module = nullptr;
@@ -193,7 +209,8 @@ void layoutAttachedWindows() {
     const bool mainVisible = IsWindowVisible(g_mainWindow) && !IsIconic(g_mainWindow);
     if (!mainVisible) {
         ShowWindow(g_tabWindow, SW_HIDE);
-        if (g_panelWindow != nullptr) {
+        if (g_panelWindow != nullptr && IsWindowVisible(g_panelWindow)) {
+            setWebViewVisible(false);
             ShowWindow(g_panelWindow, SW_HIDE);
         }
         return;
@@ -210,12 +227,15 @@ void layoutAttachedWindows() {
     const int panelWidth = scaled(g_panelWidth, dpi);
     const int mainHeight = main.bottom - main.top;
 
-    if (main.right + tabWidth + panelWidth <= work.right) {
+    // Côté où le panneau tient entièrement sur l'écran de LonelyScreen ; sinon le côté le plus spacieux.
+    const long roomRight = work.right - main.right;
+    const long roomLeft = main.left - work.left;
+    if (roomRight >= tabWidth + panelWidth) {
         g_side = Side::Right;
-    } else if (main.left - tabWidth - panelWidth >= work.left) {
+    } else if (roomLeft >= tabWidth + panelWidth) {
         g_side = Side::Left;
     } else {
-        g_side = Side::Right;
+        g_side = roomRight >= roomLeft ? Side::Right : Side::Left;
     }
 
     const int tabX = g_side == Side::Right ? main.right : main.left - tabWidth;
@@ -224,11 +244,18 @@ void layoutAttachedWindows() {
                  SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW);
 
     if (g_panelWindow != nullptr && g_panelOpen) {
-        const int panelX = g_side == Side::Right ? main.right + tabWidth : main.left - tabWidth - panelWidth;
+        // Jamais à cheval sur deux écrans : s'il manque de place, le panneau recouvre le bord de LonelyScreen.
+        int panelX = g_side == Side::Right ? main.right + tabWidth : main.left - tabWidth - panelWidth;
+        panelX = std::clamp(panelX, static_cast<int>(work.left), static_cast<int>(work.right) - panelWidth);
+        const int panelTop = std::max(static_cast<int>(main.top), static_cast<int>(work.top));
         const int panelHeight = std::min(std::max(mainHeight, scaled(kMinPanelHeight, dpi)),
-                                         static_cast<int>(work.bottom - main.top));
-        SetWindowPos(g_panelWindow, nullptr, panelX, main.top, panelWidth, panelHeight,
+                                         static_cast<int>(work.bottom) - panelTop);
+        const bool wasHidden = !IsWindowVisible(g_panelWindow);
+        SetWindowPos(g_panelWindow, nullptr, panelX, panelTop, panelWidth, panelHeight,
                      SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW);
+        if (wasHidden) {
+            setWebViewVisible(true);
+        }
     }
 }
 
@@ -564,8 +591,10 @@ void createWebView() {
     }
     g_webViewRequested = true;
     const std::wstring dataDirectory = loader::configDirectory() + L"\\webview";
+    auto options = Microsoft::WRL::Make<CoreWebView2EnvironmentOptions>();
+    options->put_AdditionalBrowserArguments(kBrowserArguments);
     const HRESULT result = CreateCoreWebView2EnvironmentWithOptions(
-        nullptr, dataDirectory.c_str(), nullptr,
+        nullptr, dataDirectory.c_str(), options.Get(),
         Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
             [](HRESULT environmentResult, ICoreWebView2Environment *environment) -> HRESULT {
                 if (FAILED(environmentResult) || environment == nullptr) {
@@ -591,6 +620,7 @@ void createWebView() {
                                     {kOpaque, kPanelBackgroundRed, kPanelBackgroundGreen, kPanelBackgroundBlue});
                             }
                             resizeWebView();
+                            setWebViewVisible(g_panelOpen && IsWindowVisible(g_panelWindow));
                             configureWebView();
                             g_controller->MoveFocus(COREWEBVIEW2_MOVE_FOCUS_REASON_PROGRAMMATIC);
                             loader::log("Studio prêt");
@@ -806,12 +836,14 @@ void toggle() {
         createPanel();
         createWebView();
         layoutAttachedWindows();
+        setWebViewVisible(true);
         SetForegroundWindow(g_panelWindow);
         if (g_controller != nullptr) {
             g_controller->MoveFocus(COREWEBVIEW2_MOVE_FOCUS_REASON_PROGRAMMATIC);
         }
         postToPage({{"event", "opened"}});
     } else if (g_panelWindow != nullptr) {
+        setWebViewVisible(false);
         ShowWindow(g_panelWindow, SW_HIDE);
     }
     paintTab();

@@ -10,6 +10,12 @@ import { BRAND_MARK, icon } from './icons.js';
 const DEFAULT_ACCENT = '#8B6CFF';
 const ACCENT_PRESETS = ['#8B6CFF', '#3DDC97', '#2BB3FF', '#FF4FD8', '#FFA94D', '#F2F3F5'];
 const HOVER_OPEN_DELAY_MS = 320;
+const SCROLL_HOVER_PAUSE_MS = 450;
+const DRAG_THRESHOLD_PX = 6;
+const RAIL_PAGE_RATIO = 0.85;
+const RAIL_EDGE_TOLERANCE_PX = 4;
+const RAIL_REVEAL_MARGIN_PX = 22;
+const TILE_REVEAL_DELAY_MS = 260;
 const WRITE_DEBOUNCE_MS = 90;
 const TOAST_MS = 3200;
 const CONFIRM_WINDOW_MS = 4000;
@@ -245,8 +251,12 @@ function tile(item) {
 function row(id, title, items, more) {
   if (!items.length) return '';
   const moreButton = more ? `<button class="more" data-action="nav" data-route="${more}">Tout afficher</button>` : '';
+  const arrows = `<div class="row-arrows">
+      <button class="icon-button" data-action="rail-scroll" data-row="${id}" data-direction="-1" aria-label="Faire défiler ${esc(title)} vers la gauche">${icon('back')}</button>
+      <button class="icon-button" data-action="rail-scroll" data-row="${id}" data-direction="1" aria-label="Faire défiler ${esc(title)} vers la droite">${icon('next')}</button>
+    </div>`;
   return `<section class="row" aria-labelledby="row-${id}">
-    <div class="section-head"><h2 id="row-${id}">${title}</h2>${moreButton}</div>
+    <div class="section-head"><h2 id="row-${id}">${title}</h2>${moreButton}${arrows}</div>
     <div class="rail-scroll" data-row="${id}">${items.map(tile).join('')}</div>
   </section>`;
 }
@@ -696,11 +706,30 @@ function renderContent() {
   };
   if (!['home', 'plugin'].includes(name)) document.documentElement.style.setProperty('--hero', heroColor(activeTheme() ?? {}));
   const content = $('#content');
-  const scrolls = [...content.querySelectorAll('[data-row]')].map((el) => [el.dataset.row, el.scrollLeft]);
+  const scrolls = [...content.querySelectorAll('.rail-scroll[data-row]')].map((el) => [el.dataset.row, el.scrollLeft]);
   content.innerHTML = (views[name] ?? viewHome)();
   scrolls.forEach(([rowId, left]) => {
-    const el = content.querySelector(`[data-row="${rowId}"]`);
+    const el = railById(rowId);
     if (el) el.scrollLeft = left;
+  });
+  updateRailArrows();
+}
+
+function railById(rowId) {
+  return document.querySelector(`.rail-scroll[data-row="${CSS.escape(rowId)}"]`);
+}
+
+/** Active ou désactive les flèches ‹ › selon la position de chaque rangée ; les masque si tout tient. */
+function updateRailArrows(rail) {
+  const rails = rail ? [rail] : [...document.querySelectorAll('.rail-scroll[data-row]')];
+  rails.forEach((el) => {
+    const arrows = el.closest('.row')?.querySelector('.row-arrows');
+    if (!arrows) return;
+    const max = el.scrollWidth - el.clientWidth;
+    arrows.hidden = max <= RAIL_EDGE_TOLERANCE_PX;
+    const [previous, next] = arrows.querySelectorAll('button');
+    previous.disabled = el.scrollLeft <= RAIL_EDGE_TOLERANCE_PX;
+    next.disabled = el.scrollLeft >= max - RAIL_EDGE_TOLERANCE_PX;
   });
 }
 
@@ -758,7 +787,14 @@ function toast(message, tone = 'info') {
 // Actions
 // ---------------------------------------------------------------------------
 
-function setOpenTile(key) {
+/**
+ * Ouvre (ou ferme avec null) une tuile.
+ * @param {string|null} key
+ * @param {{reveal?: boolean}} [options] reveal : faire défiler la rangée (et elle seule,
+ *   jamais la page) pour montrer la tuile ouverte. Réservé aux ouvertures volontaires
+ *   (clic, clavier) : au survol, déplacer le contenu sous la souris gênerait le défilement.
+ */
+function setOpenTile(key, { reveal = false } = {}) {
   state.openTile = key;
   document.querySelectorAll('.tile').forEach((el) => {
     const open = el.dataset.key === key;
@@ -766,10 +802,18 @@ function setOpenTile(key) {
     el.querySelector('.tile-hit')?.setAttribute('aria-expanded', String(open));
     el.querySelector('.tile-detail')?.setAttribute('aria-hidden', String(!open));
   });
-  if (key) {
-    const element = document.querySelector(`.tile[data-key="${CSS.escape(key)}"]`);
-    setTimeout(() => element?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' }), 200);
+  if (key && reveal) {
+    const tileEl = document.querySelector(`.tile[data-key="${CSS.escape(key)}"]`);
+    const rail = tileEl?.closest('.rail-scroll');
+    setTimeout(() => {
+      if (!tileEl || !rail) return;
+      const overflowRight = tileEl.offsetLeft + tileEl.offsetWidth - (rail.scrollLeft + rail.clientWidth);
+      const overflowLeft = rail.scrollLeft - tileEl.offsetLeft;
+      if (overflowRight > 0) rail.scrollBy({ left: overflowRight + RAIL_REVEAL_MARGIN_PX, behavior: 'smooth' });
+      else if (overflowLeft > 0) rail.scrollBy({ left: -(overflowLeft + RAIL_REVEAL_MARGIN_PX), behavior: 'smooth' });
+    }, TILE_REVEAL_DELAY_MS);
   }
+  updateRailArrows();
 }
 
 async function install(item, { quiet = false } = {}) {
@@ -869,7 +913,11 @@ function confirmReset() {
 const actions = {
   nav: (el) => navigate({ name: el.dataset.route }),
   back: () => goBack(),
-  'open-tile': (el) => setOpenTile(state.openTile === el.dataset.key ? null : el.dataset.key),
+  'open-tile': (el) => setOpenTile(state.openTile === el.dataset.key ? null : el.dataset.key, { reveal: true }),
+  'rail-scroll': (el) => {
+    const rail = railById(el.dataset.row);
+    if (rail) rail.scrollBy({ left: Number(el.dataset.direction) * rail.clientWidth * RAIL_PAGE_RATIO, behavior: 'smooth' });
+  },
   install: (el) => {
     const item = catalogItems().find((i) => keyOf(i) === el.dataset.key);
     if (item) install(item);
@@ -980,14 +1028,63 @@ document.addEventListener('submit', async (event) => {
   loadRemoteCatalog();
 });
 
-// Survol prolongé d'une tuile : elle s'ouvre comme sur un catalogue de streaming.
+// Défilement : pendant qu'on fait défiler, le contenu glisse sous la souris ; on suspend
+// alors l'ouverture des tuiles au survol pour que rien ne bouge sous le pointeur.
+let lastScrollAt = 0;
+const noteScroll = () => {
+  lastScrollAt = Date.now();
+  clearTimeout(hoverTimer);
+};
+document.addEventListener('wheel', noteScroll, { passive: true, capture: true });
+document.addEventListener('scroll', (event) => {
+  noteScroll();
+  if (event.target.classList?.contains('rail-scroll')) updateRailArrows(event.target);
+}, { passive: true, capture: true });
+window.addEventListener('resize', () => updateRailArrows());
+
+// Survol prolongé d'une tuile (souris immobile) : elle s'ouvre comme sur un catalogue de streaming.
 let hoverTimer = null;
 document.addEventListener('pointerover', (event) => {
   const tileEl = event.target.closest('.tile');
   clearTimeout(hoverTimer);
-  if (!tileEl || tileEl.classList.contains('is-open') || event.pointerType !== 'mouse') return;
-  hoverTimer = setTimeout(() => setOpenTile(tileEl.dataset.key), HOVER_OPEN_DELAY_MS);
+  if (!tileEl || tileEl.classList.contains('is-open') || event.pointerType !== 'mouse' || dragState.moved) return;
+  hoverTimer = setTimeout(() => {
+    if (Date.now() - lastScrollAt >= SCROLL_HOVER_PAUSE_MS) setOpenTile(tileEl.dataset.key);
+  }, HOVER_OPEN_DELAY_MS);
 });
+
+// Glisser une rangée à la souris pour la faire défiler (un petit déplacement reste un clic).
+const dragState = { rail: null, startX: 0, startLeft: 0, moved: false };
+document.addEventListener('pointerdown', (event) => {
+  const rail = event.target.closest('.rail-scroll');
+  if (!rail || event.pointerType !== 'mouse' || event.button !== 0 || event.target.closest('button:not(.tile-hit), a, input')) return;
+  Object.assign(dragState, { rail, startX: event.clientX, startLeft: rail.scrollLeft, moved: false });
+});
+document.addEventListener('pointermove', (event) => {
+  const { rail } = dragState;
+  if (!rail) return;
+  const dx = event.clientX - dragState.startX;
+  if (!dragState.moved && Math.abs(dx) < DRAG_THRESHOLD_PX) return;
+  if (!dragState.moved) {
+    dragState.moved = true;
+    clearTimeout(hoverTimer);
+    rail.classList.add('is-dragging');
+  }
+  rail.scrollLeft = dragState.startLeft - dx;
+});
+document.addEventListener('pointerup', () => {
+  if (!dragState.rail) return;
+  dragState.rail.classList.remove('is-dragging');
+  dragState.rail = null;
+  // Le clic qui suit un glisser ne doit pas ouvrir de tuile.
+  if (dragState.moved) setTimeout(() => { dragState.moved = false; }, 0);
+});
+document.addEventListener('click', (event) => {
+  if (dragState.moved && event.target.closest('.rail-scroll')) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+}, true);
 document.addEventListener('pointerout', (event) => {
   const row = event.target.closest('.rail-scroll');
   if (row && !row.contains(event.relatedTarget)) {
