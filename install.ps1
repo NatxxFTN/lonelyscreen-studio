@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Installe, met à jour ou retire LonelyScreen Studio.
 .DESCRIPTION

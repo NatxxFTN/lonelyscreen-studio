@@ -62,8 +62,8 @@ $content = Get-Content -LiteralPath $installer -Raw
 $content = $content -replace "(?m)^\`$PublicKeyX = '.*'$", "`$PublicKeyX = '$([Convert]::ToBase64String($parameters.Q.X))'"
 $content = $content -replace "(?m)^\`$PublicKeyY = '.*'$", "`$PublicKeyY = '$([Convert]::ToBase64String($parameters.Q.Y))'"
 $content = $content -replace "(?m)^\`$Repository = '.*'$", "`$Repository = '$Repo'"
-# BOM UTF-8 : Windows PowerShell 5.1 lit alors correctement les accents du script.
-Set-Content -LiteralPath $installer -Value $content -Encoding utf8BOM -NoNewline
+# Sans BOM : avec "iwr | iex", un BOM casserait le bloc de commentaire initial.
+Set-Content -LiteralPath $installer -Value $content -Encoding utf8NoBOM -NoNewline
 
 Write-Host "Clé privée : $KeyPath  (à sauvegarder, à ne jamais publier)"
 Write-Host 'Clé publique écrite dans loader\release_key.h et install.ps1.'
