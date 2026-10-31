@@ -1,0 +1,596 @@
+{
+    "name":  "Catalogue officiel",
+    "version":  1,
+    "items":  [
+                  {
+                      "type":  "plugin",
+                      "id":  "background",
+                      "name":  "Fond d\u0027écran",
+                      "version":  "1.1.0",
+                      "author":  "LonelyScreen Studio",
+                      "summary":  "Remplace le noir autour de la vidéo par ta couleur.",
+                      "description":  "Quand l\u0027image du téléphone ne remplit pas la fenêtre, LonelyScreen comble les bords en noir. Ce plugin les peint de la couleur de ton choix.",
+                      "cover":  {
+                                    "colors":  [
+                                                   "#1E1E2E",
+                                                   "#2A2A40",
+                                                   "#F25F5C"
+                                               ],
+                                    "motif":  "field"
+                                },
+                      "settings":  {
+                                       "file":  "background.ini",
+                                       "section":  "background",
+                                       "fields":  [
+                                                      {
+                                                          "key":  "enabled",
+                                                          "type":  "toggle",
+                                                          "label":  "Activé",
+                                                          "default":  1
+                                                      },
+                                                      {
+                                                          "key":  "color",
+                                                          "type":  "color",
+                                                          "label":  "Couleur du fond",
+                                                          "alpha":  false,
+                                                          "default":  "#1E1E2E"
+                                                      }
+                                                  ]
+                                   },
+                      "builtin":  true,
+                      "files":  [
+
+                                ]
+                  },
+                  {
+                      "type":  "plugin",
+                      "id":  "frame",
+                      "name":  "Cadre \u0026 teinte",
+                      "version":  "1.1.0",
+                      "author":  "LonelyScreen Studio",
+                      "summary":  "Une bordure colorée et un filtre d\u0027ambiance sur la recopie.",
+                      "description":  "Encadre la vidéo d\u0027une bordure à la couleur et à l\u0027épaisseur de ton choix, et pose un voile coloré semi-transparent par-dessus l\u0027image : mode nuit, ambiance chaude, look de marque.",
+                      "cover":  {
+                                    "colors":  [
+                                                   "#1A0B2E",
+                                                   "#8B6CFF",
+                                                   "#FFB86B"
+                                               ],
+                                    "motif":  "frame"
+                                },
+                      "settings":  {
+                                       "file":  "frame.ini",
+                                       "section":  "frame",
+                                       "fields":  [
+                                                      {
+                                                          "key":  "enabled",
+                                                          "type":  "toggle",
+                                                          "label":  "Activé",
+                                                          "default":  1
+                                                      },
+                                                      {
+                                                          "key":  "border_color",
+                                                          "type":  "color",
+                                                          "label":  "Bordure",
+                                                          "alpha":  true,
+                                                          "default":  "#FF7C3AED"
+                                                      },
+                                                      {
+                                                          "key":  "border_px",
+                                                          "type":  "slider",
+                                                          "label":  "Épaisseur",
+                                                          "min":  0,
+                                                          "max":  64,
+                                                          "step":  1,
+                                                          "unit":  " px",
+                                                          "default":  6
+                                                      },
+                                                      {
+                                                          "key":  "tint_color",
+                                                          "type":  "color",
+                                                          "label":  "Teinte",
+                                                          "alpha":  true,
+                                                          "default":  "#00000000"
+                                                      }
+                                                  ]
+                                   },
+                      "builtin":  true,
+                      "files":  [
+
+                                ]
+                  },
+                  {
+                      "type":  "plugin",
+                      "id":  "quality",
+                      "name":  "Qualité HD",
+                      "version":  "2.0.0",
+                      "author":  "LonelyScreen Studio",
+                      "summary":  "Image plus nette et plus vive, calculée par la carte graphique.",
+                      "description":  "Filtrage anisotrope à l\u0027agrandissement, puis netteté, contraste, saturation et luminosité réglables en direct. Rend l\u0027image plus nette et plus vive, sans inventer de détails absents de la source.",
+                      "cover":  {
+                                    "colors":  [
+                                                   "#0B1F2E",
+                                                   "#3DD6F5",
+                                                   "#F5F7FA"
+                                               ],
+                                    "motif":  "sharpen"
+                                },
+                      "settings":  {
+                                       "file":  "quality.ini",
+                                       "section":  "quality",
+                                       "fields":  [
+                                                      {
+                                                          "key":  "enabled",
+                                                          "type":  "toggle",
+                                                          "label":  "Activé",
+                                                          "default":  1
+                                                      },
+                                                      {
+                                                          "key":  "sharpen",
+                                                          "type":  "slider",
+                                                          "label":  "Netteté",
+                                                          "min":  0,
+                                                          "max":  100,
+                                                          "step":  1,
+                                                          "unit":  "%",
+                                                          "default":  40
+                                                      },
+                                                      {
+                                                          "key":  "contrast",
+                                                          "type":  "slider",
+                                                          "label":  "Contraste",
+                                                          "min":  50,
+                                                          "max":  150,
+                                                          "step":  1,
+                                                          "unit":  "%",
+                                                          "default":  100
+                                                      },
+                                                      {
+                                                          "key":  "saturation",
+                                                          "type":  "slider",
+                                                          "label":  "Saturation",
+                                                          "min":  0,
+                                                          "max":  200,
+                                                          "step":  1,
+                                                          "unit":  "%",
+                                                          "default":  100
+                                                      },
+                                                      {
+                                                          "key":  "brightness",
+                                                          "type":  "slider",
+                                                          "label":  "Luminosité",
+                                                          "min":  -50,
+                                                          "max":  50,
+                                                          "step":  1,
+                                                          "unit":  "",
+                                                          "default":  0
+                                                      },
+                                                      {
+                                                          "key":  "mode",
+                                                          "type":  "choice",
+                                                          "label":  "Filtrage",
+                                                          "default":  "anisotropic",
+                                                          "options":  [
+                                                                          {
+                                                                              "value":  "anisotropic",
+                                                                              "label":  "Anisotrope"
+                                                                          },
+                                                                          {
+                                                                              "value":  "linear",
+                                                                              "label":  "Bilinéaire"
+                                                                          }
+                                                                      ]
+                                                      },
+                                                      {
+                                                          "key":  "max_anisotropy",
+                                                          "type":  "slider",
+                                                          "label":  "Anisotropie max.",
+                                                          "min":  1,
+                                                          "max":  16,
+                                                          "step":  1,
+                                                          "unit":  "×",
+                                                          "default":  8
+                                                      }
+                                                  ]
+                                   },
+                      "builtin":  true,
+                      "files":  [
+
+                                ]
+                  },
+                  {
+                      "type":  "theme",
+                      "id":  "golden-hour",
+                      "name":  "Golden hour",
+                      "version":  "1.0.0",
+                      "author":  "LonelyScreen Studio",
+                      "summary":  "Lumière dorée de fin de journée.",
+                      "description":  "Un voile ambré très léger, des couleurs réchauffées et une bordure miel : idéal pour montrer des photos.",
+                      "cover":  {
+                                    "colors":  [
+                                                   "#2B1408",
+                                                   "#FF9F43",
+                                                   "#FFD27A"
+                                               ],
+                                    "motif":  "waves"
+                                },
+                      "accent":  "#FFA94D",
+                      "settings":  [
+                                       {
+                                           "file":  "background.ini",
+                                           "section":  "background",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "color":  "#1C0F07"
+                                                      }
+                                       },
+                                       {
+                                           "file":  "frame.ini",
+                                           "section":  "frame",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "border_color":  "#FFFFB067",
+                                                          "border_px":  "3",
+                                                          "tint_color":  "#26FF8C1A"
+                                                      }
+                                       },
+                                       {
+                                           "file":  "quality.ini",
+                                           "section":  "quality",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "sharpen":  "30",
+                                                          "contrast":  "104",
+                                                          "saturation":  "118",
+                                                          "brightness":  "3"
+                                                      }
+                                       }
+                                   ],
+                      "files":  [
+                                    {
+                                        "src":  "themes/golden-hour.json",
+                                        "path":  "golden-hour.json",
+                                        "sha256":  "7240420ccf3e120cb3f5f6ba9c7e42712116bf80b9d85e3c58425c3305e409aa"
+                                    }
+                                ]
+                  },
+                  {
+                      "type":  "theme",
+                      "id":  "noir-cinema",
+                      "name":  "Noir cinéma",
+                      "version":  "1.0.0",
+                      "author":  "LonelyScreen Studio",
+                      "summary":  "Noir et blanc contrasté, comme une pellicule.",
+                      "description":  "Saturation coupée, contraste relevé, fond d\u0027ébène et aucune bordure : chaque recopie devient une projection en noir et blanc.",
+                      "cover":  {
+                                    "colors":  [
+                                                   "#0A0A0A",
+                                                   "#E8E8E8",
+                                                   "#5A5A5A"
+                                               ],
+                                    "motif":  "grid"
+                                },
+                      "accent":  "#E8E8E8",
+                      "settings":  [
+                                       {
+                                           "file":  "background.ini",
+                                           "section":  "background",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "color":  "#050505"
+                                                      }
+                                       },
+                                       {
+                                           "file":  "frame.ini",
+                                           "section":  "frame",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "border_color":  "#00000000",
+                                                          "border_px":  "0",
+                                                          "tint_color":  "#00000000"
+                                                      }
+                                       },
+                                       {
+                                           "file":  "quality.ini",
+                                           "section":  "quality",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "sharpen":  "55",
+                                                          "contrast":  "118",
+                                                          "saturation":  "0",
+                                                          "brightness":  "-2"
+                                                      }
+                                       }
+                                   ],
+                      "files":  [
+                                    {
+                                        "src":  "themes/noir-cinema.json",
+                                        "path":  "noir-cinema.json",
+                                        "sha256":  "00116613dbabd6c437cfe9985323d566978ac6b4ed7fa046b21a11ba8e579c58"
+                                    }
+                                ]
+                  },
+                  {
+                      "type":  "theme",
+                      "id":  "nuit-neon",
+                      "name":  "Nuit néon",
+                      "version":  "1.0.0",
+                      "author":  "LonelyScreen Studio",
+                      "summary":  "Magenta électrique et cyan sur fond violet nuit.",
+                      "description":  "Une bordure magenta fine, un fond violet profond et des couleurs poussées : la recopie prend des airs de club à deux heures du matin.",
+                      "cover":  {
+                                    "colors":  [
+                                                   "#12052B",
+                                                   "#FF2BD6",
+                                                   "#22E4FF"
+                                               ],
+                                    "motif":  "orbit"
+                                },
+                      "accent":  "#FF4FD8",
+                      "settings":  [
+                                       {
+                                           "file":  "background.ini",
+                                           "section":  "background",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "color":  "#12052B"
+                                                      }
+                                       },
+                                       {
+                                           "file":  "frame.ini",
+                                           "section":  "frame",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "border_color":  "#FFFF2BD6",
+                                                          "border_px":  "4",
+                                                          "tint_color":  "#00000000"
+                                                      }
+                                       },
+                                       {
+                                           "file":  "quality.ini",
+                                           "section":  "quality",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "sharpen":  "45",
+                                                          "contrast":  "112",
+                                                          "saturation":  "135",
+                                                          "brightness":  "0"
+                                                      }
+                                       }
+                                   ],
+                      "files":  [
+                                    {
+                                        "src":  "themes/nuit-neon.json",
+                                        "path":  "nuit-neon.json",
+                                        "sha256":  "44256c889fccbf76a24acd734d52c2f57172af8021d530457d0c6bb982ff4294"
+                                    }
+                                ]
+                  },
+                  {
+                      "type":  "theme",
+                      "id":  "ocean",
+                      "name":  "Océan",
+                      "version":  "1.0.0",
+                      "author":  "LonelyScreen Studio",
+                      "summary":  "Bleus profonds et bordure turquoise.",
+                      "description":  "Un fond abyssal, une bordure lagon et des bleus ravivés : apaisant pour les longues sessions de recopie.",
+                      "cover":  {
+                                    "colors":  [
+                                                   "#03131F",
+                                                   "#2BB3FF",
+                                                   "#7CF5D4"
+                                               ],
+                                    "motif":  "orbit"
+                                },
+                      "accent":  "#2BB3FF",
+                      "settings":  [
+                                       {
+                                           "file":  "background.ini",
+                                           "section":  "background",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "color":  "#03131F"
+                                                      }
+                                       },
+                                       {
+                                           "file":  "frame.ini",
+                                           "section":  "frame",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "border_color":  "#FF2BB3FF",
+                                                          "border_px":  "4",
+                                                          "tint_color":  "#14004A80"
+                                                      }
+                                       },
+                                       {
+                                           "file":  "quality.ini",
+                                           "section":  "quality",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "sharpen":  "35",
+                                                          "contrast":  "104",
+                                                          "saturation":  "112",
+                                                          "brightness":  "0"
+                                                      }
+                                       }
+                                   ],
+                      "files":  [
+                                    {
+                                        "src":  "themes/ocean.json",
+                                        "path":  "ocean.json",
+                                        "sha256":  "ee97c403ada2e0c96f21010cee5dfcfa39baf5c5cc1e38dc7b7eff07376c8051"
+                                    }
+                                ]
+                  },
+                  {
+                      "type":  "theme",
+                      "id":  "presentation",
+                      "name":  "Présentation pro",
+                      "version":  "1.0.0",
+                      "author":  "LonelyScreen Studio",
+                      "summary":  "Sobre et net, pour projeter en réunion.",
+                      "description":  "Fond ardoise, liseré blanc discret et netteté renforcée : la recopie reste lisible au vidéoprojecteur.",
+                      "cover":  {
+                                    "colors":  [
+                                                   "#101418",
+                                                   "#F5F7FA",
+                                                   "#4C8DFF"
+                                               ],
+                                    "motif":  "grid"
+                                },
+                      "accent":  "#4C8DFF",
+                      "settings":  [
+                                       {
+                                           "file":  "background.ini",
+                                           "section":  "background",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "color":  "#101418"
+                                                      }
+                                       },
+                                       {
+                                           "file":  "frame.ini",
+                                           "section":  "frame",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "border_color":  "#CCF5F7FA",
+                                                          "border_px":  "2",
+                                                          "tint_color":  "#00000000"
+                                                      }
+                                       },
+                                       {
+                                           "file":  "quality.ini",
+                                           "section":  "quality",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "sharpen":  "60",
+                                                          "contrast":  "106",
+                                                          "saturation":  "100",
+                                                          "brightness":  "0"
+                                                      }
+                                       }
+                                   ],
+                      "files":  [
+                                    {
+                                        "src":  "themes/presentation.json",
+                                        "path":  "presentation.json",
+                                        "sha256":  "1e55facb24b5bc614716fce5071e47bf404033a9e38594af64b1466e7baeee55"
+                                    }
+                                ]
+                  },
+                  {
+                      "type":  "theme",
+                      "id":  "vintage-79",
+                      "name":  "Vintage 79",
+                      "version":  "1.0.0",
+                      "author":  "LonelyScreen Studio",
+                      "summary":  "Couleurs passées et grain chaud, façon tirage argentique.",
+                      "description":  "Saturation adoucie, contraste tassé et un voile sépia : un look photo de famille sans filtre d\u0027app.",
+                      "cover":  {
+                                    "colors":  [
+                                                   "#2A1F14",
+                                                   "#C8A27A",
+                                                   "#7A5C3E"
+                                               ],
+                                    "motif":  "waves"
+                                },
+                      "accent":  "#D9A86C",
+                      "settings":  [
+                                       {
+                                           "file":  "background.ini",
+                                           "section":  "background",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "color":  "#1A140D"
+                                                      }
+                                       },
+                                       {
+                                           "file":  "frame.ini",
+                                           "section":  "frame",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "border_color":  "#FF6B4E33",
+                                                          "border_px":  "8",
+                                                          "tint_color":  "#2E8A5A2B"
+                                                      }
+                                       },
+                                       {
+                                           "file":  "quality.ini",
+                                           "section":  "quality",
+                                           "values":  {
+                                                          "enabled":  "1",
+                                                          "sharpen":  "15",
+                                                          "contrast":  "92",
+                                                          "saturation":  "78",
+                                                          "brightness":  "2"
+                                                      }
+                                       }
+                                   ],
+                      "files":  [
+                                    {
+                                        "src":  "themes/vintage-79.json",
+                                        "path":  "vintage-79.json",
+                                        "sha256":  "ed3544f9ca3fc1dedbe6e73ca3e27aedc664d5f2ddd8d83bab6e5795728c0d48"
+                                    }
+                                ]
+                  },
+                  {
+                      "type":  "app",
+                      "id":  "chrono",
+                      "name":  "Chrono de présentation",
+                      "version":  "1.0.0",
+                      "author":  "LonelyScreen Studio",
+                      "summary":  "Un minuteur qui vire à l\u0027orange puis au rouge.",
+                      "description":  "Pour tenir son temps pendant une démo projetée depuis l\u0027iPhone : préréglages de 5 à 30 minutes, cadran qui se vide, alerte visuelle à la dernière minute et en dépassement.",
+                      "cover":  {
+                                    "colors":  [
+                                                   "#0E2A22",
+                                                   "#7CF5C9",
+                                                   "#FFB547"
+                                               ],
+                                    "motif":  "dial"
+                                },
+                      "files":  [
+                                    {
+                                        "src":  "apps/chrono/app.json",
+                                        "path":  "app.json",
+                                        "sha256":  "5cf3526d6b0ce8bd30fb68fff386c3f6407058600f1752be659e78defda8648f"
+                                    },
+                                    {
+                                        "src":  "apps/chrono/index.html",
+                                        "path":  "index.html",
+                                        "sha256":  "6b26ef42e187ca156999e84626a808b23a9cf0418bfdd0d3d78af41aa2a65630"
+                                    }
+                                ]
+                  },
+                  {
+                      "type":  "app",
+                      "id":  "palette",
+                      "name":  "Atelier palette",
+                      "version":  "1.0.0",
+                      "author":  "LonelyScreen Studio",
+                      "summary":  "Génère des harmonies et les envoie au cadre et au fond.",
+                      "description":  "Choisis une teinte de départ et une harmonie (analogue, complémentaire, triadique) : l\u0027atelier propose une palette et applique en un clic la bordure et le fond de la recopie.",
+                      "cover":  {
+                                    "colors":  [
+                                                   "#1B1030",
+                                                   "#FF6B9A",
+                                                   "#6BD7FF"
+                                               ],
+                                    "motif":  "swatches"
+                                },
+                      "files":  [
+                                    {
+                                        "src":  "apps/palette/app.json",
+                                        "path":  "app.json",
+                                        "sha256":  "9b95b8dbbcdb9287721b436a54e86ba3806f6431fe6021be42b141506fbe53be"
+                                    },
+                                    {
+                                        "src":  "apps/palette/index.html",
+                                        "path":  "index.html",
+                                        "sha256":  "829dec440c4d3bc9baa7f984a9c044568edfda95854c7cd0aa3cab9fec4c41bf"
+                                    }
+                                ]
+                  }
+              ]
+}

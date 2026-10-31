@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chrono de présentation</title>
+<style>
+  :root {
+    --ground: #0e0f13; --raised: #181a20; --line: #2a2d36; --ink: #f2f3f5; --muted: #a3a7b3;
+    --calm: #7cf5c9; --warn: #ffb547; --over: #ff5d6c;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--ground); color: var(--ink);
+         font: 15px/1.5 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif; }
+  main { width: min(520px, 100% - 48px); display: grid; gap: clamp(14px, 4vh, 28px); justify-items: center; padding: 16px 0; }
+  .dial { position: relative; width: min(260px, 46vh); aspect-ratio: 1; }
+  .dial svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .track { fill: none; stroke: var(--raised); stroke-width: 10; }
+  .progress { fill: none; stroke: var(--state, var(--calm)); stroke-width: 10; stroke-linecap: round;
+              transition: stroke-dashoffset .25s linear, stroke .4s ease; }
+  .readout { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+  .time { font-size: clamp(2.2rem, 8vh, 3.4rem); font-weight: 650; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  .status { color: var(--muted); font-size: .9rem; }
+  .presets, .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  button { font: inherit; border: 1px solid var(--line); background: var(--raised); color: var(--ink);
+           border-radius: 999px; padding: 8px 16px; cursor: pointer; transition: background .15s, border-color .15s; }
+  button:hover { border-color: #3d414d; background: #20232b; }
+  button:focus-visible { outline: 2px solid var(--calm); outline-offset: 2px; }
+  button[aria-pressed="true"] { border-color: var(--calm); color: var(--calm); }
+  .primary { background: var(--ink); color: var(--ground); border-color: var(--ink); font-weight: 600; padding: 10px 26px; }
+  .primary:hover { background: #fff; border-color: #fff; }
+  .hint { color: var(--muted); font-size: .82rem; }
+  kbd { font: inherit; border: 1px solid var(--line); border-radius: 5px; padding: 0 6px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="dial" id="dial" aria-label="Chrono de présentation">
+    <svg viewBox="0 0 120 120" aria-hidden="true">
+      <circle class="track" cx="60" cy="60" r="52"></circle>
+      <circle class="progress" id="progress" cx="60" cy="60" r="52"></circle>
+    </svg>
+    <div class="readout">
+      <div class="time" id="time" role="timer" aria-live="off">10:00</div>
+      <div class="status" id="status">Prêt</div>
+    </div>
+  </div>
+  <div class="presets" id="presets" role="group" aria-label="Durée">
+    <button data-min="5">5 min</button>
+    <button data-min="10" aria-pressed="true">10 min</button>
+    <button data-min="15">15 min</button>
+    <button data-min="20">20 min</button>
+    <button data-min="30">30 min</button>
+  </div>
+  <div class="controls">
+    <button class="primary" id="toggle">Démarrer</button>
+    <button id="reset">Remettre à zéro</button>
+  </div>
+  <p class="hint"><kbd>Espace</kbd> démarre ou met en pause. Orange à la dernière minute, rouge en dépassement.</p>
+</main>
+<script>
+  const CIRCUMFERENCE = 2 * Math.PI * 52;
+  const WARN_SECONDS = 60;
+  const TICK_MS = 250;
+  const progress = document.getElementById('progress');
+  const timeEl = document.getElementById('time');
+  const statusEl = document.getElementById('status');
+  const toggleBtn = document.getElementById('toggle');
+  progress.style.strokeDasharray = CIRCUMFERENCE;
+
+  let totalMs = 10 * 60 * 1000;
+  let remainingMs = totalMs;
+  let endAt = null;
+  let timer = null;
+
+  function format(ms) {
+    const over = ms < 0;
+    const s = Math.ceil(Math.abs(ms) / 1000);
+    const text = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    return over ? `+${text}` : text;
+  }
+
+  function render() {
+    const ratio = Math.max(0, remainingMs) / totalMs;
+    progress.style.strokeDashoffset = CIRCUMFERENCE * (1 - ratio);
+    timeEl.textContent = format(remainingMs);
+    const state = remainingMs < 0 ? 'var(--over)' : remainingMs <= WARN_SECONDS * 1000 ? 'var(--warn)' : 'var(--calm)';
+    document.documentElement.style.setProperty('--state', state);
+    timeEl.style.color = remainingMs < 0 ? 'var(--over)' : '';
+    statusEl.textContent = timer ? (remainingMs < 0 ? 'Temps dépassé' : 'En cours') : (remainingMs === totalMs ? 'Prêt' : 'En pause');
+    toggleBtn.textContent = timer ? 'Pause' : (remainingMs === totalMs ? 'Démarrer' : 'Reprendre');
+  }
+
+  function start() {
+    endAt = Date.now() + remainingMs;
+    timer = setInterval(() => { remainingMs = endAt - Date.now(); render(); }, TICK_MS);
+    render();
+  }
+  function pause() { clearInterval(timer); timer = null; render(); }
+  function reset() { pause(); remainingMs = totalMs; render(); }
+
+  toggleBtn.addEventListener('click', () => (timer ? pause() : start()));
+  document.getElementById('reset').addEventListener('click', reset);
+  document.getElementById('presets').addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-min]');
+    if (!button) return;
+    document.querySelectorAll('#presets button').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+    totalMs = Number(button.dataset.min) * 60 * 1000;
+    reset();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.code === 'Space' && event.target === document.body) { event.preventDefault(); toggleBtn.click(); }
+  });
+  render();
+</script>
+</body>
+</html>

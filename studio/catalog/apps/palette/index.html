@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atelier palette</title>
+<style>
+  :root { --ground: #0e0f13; --raised: #181a20; --line: #2a2d36; --ink: #f2f3f5; --muted: #a3a7b3; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink); font: 15px/1.5 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 640px; margin: 0 auto; padding: 32px 28px 40px; display: grid; gap: 24px; }
+  h1 { margin: 0 0 4px; font-size: 1.5rem; letter-spacing: -0.02em; }
+  p { margin: 0; color: var(--muted); }
+  .controls { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; }
+  label { display: grid; gap: 8px; font-size: .85rem; color: var(--muted); }
+  input[type="range"] { width: 100%; accent-color: var(--ink); }
+  .hue { height: 10px; border-radius: 999px; background: linear-gradient(90deg, hsl(0 85% 60%), hsl(60 85% 60%), hsl(120 85% 60%), hsl(180 85% 60%), hsl(240 85% 60%), hsl(300 85% 60%), hsl(360 85% 60%)); }
+  .modes { display: flex; gap: 6px; }
+  button { font: inherit; border: 1px solid var(--line); background: var(--raised); color: var(--ink); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button:hover { background: #20232b; }
+  button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  button[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+  .swatches { display: grid; grid-template-columns: repeat(5, 1fr); border-radius: 14px; overflow: hidden; height: 150px; }
+  .swatch { display: flex; align-items: flex-end; padding: 10px; font-size: .78rem; font-variant-numeric: tabular-nums; cursor: pointer; border: 0; border-radius: 0; color: inherit; }
+  .swatch[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--ink); }
+  .apply { display: flex; gap: 10px; flex-wrap: wrap; }
+  .primary { background: var(--ink); color: var(--ground); border-color: var(--ink); font-weight: 600; }
+  .primary:hover { background: #fff; }
+  .note { font-size: .85rem; min-height: 1.4em; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Atelier palette</h1>
+    <p>Choisis une teinte et une harmonie, puis envoie les couleurs vers la recopie.</p>
+  </header>
+  <div class="controls">
+    <label>Teinte de départ
+      <div class="hue"></div>
+      <input type="range" id="hue" min="0" max="359" value="262" aria-label="Teinte de départ">
+    </label>
+    <div class="modes" id="modes" role="group" aria-label="Harmonie">
+      <button data-mode="analogous" aria-pressed="true">Analogue</button>
+      <button data-mode="complementary">Complémentaire</button>
+      <button data-mode="triadic">Triadique</button>
+    </div>
+  </div>
+  <div class="swatches" id="swatches" role="group" aria-label="Palette générée"></div>
+  <div class="apply">
+    <button class="primary" id="toBorder">Couleur sélectionnée → bordure</button>
+    <button id="toBackground">Teinte la plus sombre → fond</button>
+  </div>
+  <p class="note" id="note" role="status"></p>
+</main>
+<script>
+  const OFFSETS = { analogous: [0, 24, -24, 48, -48], complementary: [0, 180, 20, 200, -20], triadic: [0, 120, 240, 30, 150] };
+  const LIGHTNESS = [58, 66, 48, 74, 22];
+  const SATURATION = 82;
+  let mode = 'analogous';
+  let selected = 0;
+  let colors = [];
+
+  function hslToHex(h, s, l) {
+    s /= 100; l /= 100;
+    const k = (n) => (n + h / 30) % 12;
+    const a = s * Math.min(l, 1 - l);
+    const f = (n) => Math.round(255 * (l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)))));
+    return '#' + [f(0), f(8), f(4)].map((v) => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
+
+  function render() {
+    const base = Number(document.getElementById('hue').value);
+    colors = OFFSETS[mode].map((offset, i) => hslToHex((base + offset + 360) % 360, SATURATION, LIGHTNESS[i]));
+    const container = document.getElementById('swatches');
+    container.replaceChildren(...colors.map((hex, i) => {
+      const swatch = document.createElement('button');
+      swatch.className = 'swatch';
+      swatch.style.background = hex;
+      swatch.style.color = LIGHTNESS[i] > 55 ? '#0e0f13' : '#f2f3f5';
+      swatch.textContent = hex;
+      swatch.setAttribute('aria-pressed', String(i === selected));
+      swatch.addEventListener('click', () => { selected = i; render(); });
+      return swatch;
+    }));
+  }
+
+  /** Envoie une demande au Studio (parent) et attend sa réponse. */
+  function studioWrite(file, section, values) {
+    return new Promise((resolve, reject) => {
+      const requestId = Math.random().toString(36).slice(2);
+      const onReply = (event) => {
+        if (event.data?.type !== 'ls:reply' || event.data.requestId !== requestId) return;
+        window.removeEventListener('message', onReply);
+        event.data.ok ? resolve() : reject(new Error(event.data.error));
+      };
+      window.addEventListener('message', onReply);
+      window.parent.postMessage({ type: 'ls:writeIni', requestId, file, section, values }, '*');
+    });
+  }
+
+  async function send(label, file, section, values) {
+    const note = document.getElementById('note');
+    try {
+      await studioWrite(file, section, values);
+      note.textContent = `${label} appliqué en direct.`;
+    } catch (error) {
+      note.textContent = `Impossible d'appliquer : ${error.message}`;
+    }
+  }
+
+  document.getElementById('hue').addEventListener('input', render);
+  document.getElementById('modes').addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-mode]');
+    if (!button) return;
+    mode = button.dataset.mode;
+    document.querySelectorAll('#modes button').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+    render();
+  });
+  document.getElementById('toBorder').addEventListener('click', () =>
+    send('Bordure', 'frame.ini', 'frame', { enabled: '1', border_color: '#FF' + colors[selected].slice(1) }));
+  document.getElementById('toBackground').addEventListener('click', () =>
+    send('Fond', 'background.ini', 'background', { enabled: '1', color: colors[4] }));
+  render();
+</script>
+</body>
+</html>

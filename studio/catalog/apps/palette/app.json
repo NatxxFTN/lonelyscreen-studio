@@ -1,0 +1,11 @@
+{
+  "id": "palette",
+  "name": "Atelier palette",
+  "version": "1.0.0",
+  "author": "LonelyScreen Studio",
+  "category": "app",
+  "summary": "Génère des harmonies et les envoie au cadre et au fond.",
+  "description": "Choisis une teinte de départ et une harmonie (analogue, complémentaire, triadique) : l'atelier propose une palette et applique en un clic la bordure et le fond de la recopie.",
+  "cover": { "colors": ["#1B1030", "#FF6B9A", "#6BD7FF"], "motif": "swatches" },
+  "icon": "palette"
+}

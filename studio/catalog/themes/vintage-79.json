@@ -1,0 +1,49 @@
+{
+  "id": "vintage-79",
+  "name": "Vintage 79",
+  "version": "1.0.0",
+  "author": "LonelyScreen Studio",
+  "category": "theme",
+  "summary": "Couleurs passées et grain chaud, façon tirage argentique.",
+  "description": "Saturation adoucie, contraste tassé et un voile sépia : un look photo de famille sans filtre d'app.",
+  "cover": {
+    "colors": [
+      "#2A1F14",
+      "#C8A27A",
+      "#7A5C3E"
+    ],
+    "motif": "waves"
+  },
+  "accent": "#D9A86C",
+  "settings": [
+    {
+      "file": "background.ini",
+      "section": "background",
+      "values": {
+        "enabled": "1",
+        "color": "#1A140D"
+      }
+    },
+    {
+      "file": "frame.ini",
+      "section": "frame",
+      "values": {
+        "enabled": "1",
+        "border_color": "#FF6B4E33",
+        "border_px": "8",
+        "tint_color": "#2E8A5A2B"
+      }
+    },
+    {
+      "file": "quality.ini",
+      "section": "quality",
+      "values": {
+        "enabled": "1",
+        "sharpen": "15",
+        "contrast": "92",
+        "saturation": "78",
+        "brightness": "2"
+      }
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "id": "nuit-neon",
+  "name": "Nuit néon",
+  "version": "1.0.0",
+  "author": "LonelyScreen Studio",
+  "category": "theme",
+  "summary": "Magenta électrique et cyan sur fond violet nuit.",
+  "description": "Une bordure magenta fine, un fond violet profond et des couleurs poussées : la recopie prend des airs de club à deux heures du matin.",
+  "cover": {
+    "colors": [
+      "#12052B",
+      "#FF2BD6",
+      "#22E4FF"
+    ],
+    "motif": "orbit"
+  },
+  "accent": "#FF4FD8",
+  "settings": [
+    {
+      "file": "background.ini",
+      "section": "background",
+      "values": {
+        "enabled": "1",
+        "color": "#12052B"
+      }
+    },
+    {
+      "file": "frame.ini",
+      "section": "frame",
+      "values": {
+        "enabled": "1",
+        "border_color": "#FFFF2BD6",
+        "border_px": "4",
+        "tint_color": "#00000000"
+      }
+    },
+    {
+      "file": "quality.ini",
+      "section": "quality",
+      "values": {
+        "enabled": "1",
+        "sharpen": "45",
+        "contrast": "112",
+        "saturation": "135",
+        "brightness": "0"
+      }
+    }
+  ]
+}

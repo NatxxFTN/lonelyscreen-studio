@@ -1,0 +1,49 @@
+{
+  "id": "ocean",
+  "name": "Océan",
+  "version": "1.0.0",
+  "author": "LonelyScreen Studio",
+  "category": "theme",
+  "summary": "Bleus profonds et bordure turquoise.",
+  "description": "Un fond abyssal, une bordure lagon et des bleus ravivés : apaisant pour les longues sessions de recopie.",
+  "cover": {
+    "colors": [
+      "#03131F",
+      "#2BB3FF",
+      "#7CF5D4"
+    ],
+    "motif": "orbit"
+  },
+  "accent": "#2BB3FF",
+  "settings": [
+    {
+      "file": "background.ini",
+      "section": "background",
+      "values": {
+        "enabled": "1",
+        "color": "#03131F"
+      }
+    },
+    {
+      "file": "frame.ini",
+      "section": "frame",
+      "values": {
+        "enabled": "1",
+        "border_color": "#FF2BB3FF",
+        "border_px": "4",
+        "tint_color": "#14004A80"
+      }
+    },
+    {
+      "file": "quality.ini",
+      "section": "quality",
+      "values": {
+        "enabled": "1",
+        "sharpen": "35",
+        "contrast": "104",
+        "saturation": "112",
+        "brightness": "0"
+      }
+    }
+  ]
+}

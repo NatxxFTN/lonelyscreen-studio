@@ -1,0 +1,17 @@
+# Sorties de compilation et paquets de version
+build/
+dist/
+*.obj
+*.exp
+*.lib
+!third_party/webview2/lib/x86/WebView2LoaderStatic.lib
+
+# Outils locaux
+.playwright-mcp/
+.impeccable/review/
+.impeccable/live/
+
+# Jamais dans le dépôt : clé privée de signature, sorties de décompilation
+*.key
+release-signing-key.json
+lonelyscreen-decompile/

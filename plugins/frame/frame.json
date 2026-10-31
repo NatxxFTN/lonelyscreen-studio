@@ -1,0 +1,20 @@
+{
+  "id": "frame",
+  "name": "Cadre & teinte",
+  "version": "1.1.0",
+  "author": "LonelyScreen Studio",
+  "category": "effect",
+  "summary": "Une bordure colorée et un filtre d'ambiance sur la recopie.",
+  "description": "Encadre la vidéo d'une bordure à la couleur et à l'épaisseur de ton choix, et pose un voile coloré semi-transparent par-dessus l'image : mode nuit, ambiance chaude, look de marque.",
+  "cover": { "colors": ["#1A0B2E", "#8B6CFF", "#FFB86B"], "motif": "frame" },
+  "settings": {
+    "file": "frame.ini",
+    "section": "frame",
+    "fields": [
+      { "key": "enabled", "type": "toggle", "label": "Activé", "default": 1 },
+      { "key": "border_color", "type": "color", "label": "Bordure", "alpha": true, "default": "#FF7C3AED" },
+      { "key": "border_px", "type": "slider", "label": "Épaisseur", "min": 0, "max": 64, "step": 1, "unit": " px", "default": 6 },
+      { "key": "tint_color", "type": "color", "label": "Teinte", "alpha": true, "default": "#00000000" }
+    ]
+  }
+}

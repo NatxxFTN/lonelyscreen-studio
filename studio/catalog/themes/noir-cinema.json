@@ -1,0 +1,49 @@
+{
+  "id": "noir-cinema",
+  "name": "Noir cinéma",
+  "version": "1.0.0",
+  "author": "LonelyScreen Studio",
+  "category": "theme",
+  "summary": "Noir et blanc contrasté, comme une pellicule.",
+  "description": "Saturation coupée, contraste relevé, fond d'ébène et aucune bordure : chaque recopie devient une projection en noir et blanc.",
+  "cover": {
+    "colors": [
+      "#0A0A0A",
+      "#E8E8E8",
+      "#5A5A5A"
+    ],
+    "motif": "grid"
+  },
+  "accent": "#E8E8E8",
+  "settings": [
+    {
+      "file": "background.ini",
+      "section": "background",
+      "values": {
+        "enabled": "1",
+        "color": "#050505"
+      }
+    },
+    {
+      "file": "frame.ini",
+      "section": "frame",
+      "values": {
+        "enabled": "1",
+        "border_color": "#00000000",
+        "border_px": "0",
+        "tint_color": "#00000000"
+      }
+    },
+    {
+      "file": "quality.ini",
+      "section": "quality",
+      "values": {
+        "enabled": "1",
+        "sharpen": "55",
+        "contrast": "118",
+        "saturation": "0",
+        "brightness": "-2"
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "chrono",
+  "name": "Chrono de présentation",
+  "version": "1.0.0",
+  "author": "LonelyScreen Studio",
+  "category": "app",
+  "summary": "Un minuteur qui vire à l'orange puis au rouge.",
+  "description": "Pour tenir son temps pendant une démo projetée depuis l'iPhone : préréglages de 5 à 30 minutes, cadran qui se vide, alerte visuelle à la dernière minute et en dépassement.",
+  "cover": { "colors": ["#0E2A22", "#7CF5C9", "#FFB547"], "motif": "dial" },
+  "icon": "timer"
+}

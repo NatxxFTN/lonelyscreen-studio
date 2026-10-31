@@ -1,0 +1,49 @@
+{
+  "id": "golden-hour",
+  "name": "Golden hour",
+  "version": "1.0.0",
+  "author": "LonelyScreen Studio",
+  "category": "theme",
+  "summary": "Lumière dorée de fin de journée.",
+  "description": "Un voile ambré très léger, des couleurs réchauffées et une bordure miel : idéal pour montrer des photos.",
+  "cover": {
+    "colors": [
+      "#2B1408",
+      "#FF9F43",
+      "#FFD27A"
+    ],
+    "motif": "waves"
+  },
+  "accent": "#FFA94D",
+  "settings": [
+    {
+      "file": "background.ini",
+      "section": "background",
+      "values": {
+        "enabled": "1",
+        "color": "#1C0F07"
+      }
+    },
+    {
+      "file": "frame.ini",
+      "section": "frame",
+      "values": {
+        "enabled": "1",
+        "border_color": "#FFFFB067",
+        "border_px": "3",
+        "tint_color": "#26FF8C1A"
+      }
+    },
+    {
+      "file": "quality.ini",
+      "section": "quality",
+      "values": {
+        "enabled": "1",
+        "sharpen": "30",
+        "contrast": "104",
+        "saturation": "118",
+        "brightness": "3"
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "background",
+  "name": "Fond d'écran",
+  "version": "1.1.0",
+  "author": "LonelyScreen Studio",
+  "category": "effect",
+  "summary": "Remplace le noir autour de la vidéo par ta couleur.",
+  "description": "Quand l'image du téléphone ne remplit pas la fenêtre, LonelyScreen comble les bords en noir. Ce plugin les peint de la couleur de ton choix.",
+  "cover": { "colors": ["#1E1E2E", "#2A2A40", "#F25F5C"], "motif": "field" },
+  "settings": {
+    "file": "background.ini",
+    "section": "background",
+    "fields": [
+      { "key": "enabled", "type": "toggle", "label": "Activé", "default": 1 },
+      { "key": "color", "type": "color", "label": "Couleur du fond", "alpha": false, "default": "#1E1E2E" }
+    ]
+  }
+}

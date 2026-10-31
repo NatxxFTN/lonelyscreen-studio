@@ -1,0 +1,24 @@
+{
+  "id": "quality",
+  "name": "Qualité HD",
+  "version": "2.0.0",
+  "author": "LonelyScreen Studio",
+  "category": "effect",
+  "summary": "Image plus nette et plus vive, calculée par la carte graphique.",
+  "description": "Filtrage anisotrope à l'agrandissement, puis netteté, contraste, saturation et luminosité réglables en direct. Rend l'image plus nette et plus vive, sans inventer de détails absents de la source.",
+  "cover": { "colors": ["#0B1F2E", "#3DD6F5", "#F5F7FA"], "motif": "sharpen" },
+  "settings": {
+    "file": "quality.ini",
+    "section": "quality",
+    "fields": [
+      { "key": "enabled", "type": "toggle", "label": "Activé", "default": 1 },
+      { "key": "sharpen", "type": "slider", "label": "Netteté", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 40 },
+      { "key": "contrast", "type": "slider", "label": "Contraste", "min": 50, "max": 150, "step": 1, "unit": "%", "default": 100 },
+      { "key": "saturation", "type": "slider", "label": "Saturation", "min": 0, "max": 200, "step": 1, "unit": "%", "default": 100 },
+      { "key": "brightness", "type": "slider", "label": "Luminosité", "min": -50, "max": 50, "step": 1, "unit": "", "default": 0 },
+      { "key": "mode", "type": "choice", "label": "Filtrage", "default": "anisotropic",
+        "options": [ { "value": "anisotropic", "label": "Anisotrope" }, { "value": "linear", "label": "Bilinéaire" } ] },
+      { "key": "max_anisotropy", "type": "slider", "label": "Anisotropie max.", "min": 1, "max": 16, "step": 1, "unit": "×", "default": 8 }
+    ]
+  }
+}

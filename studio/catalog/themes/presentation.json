@@ -1,0 +1,49 @@
+{
+  "id": "presentation",
+  "name": "Présentation pro",
+  "version": "1.0.0",
+  "author": "LonelyScreen Studio",
+  "category": "theme",
+  "summary": "Sobre et net, pour projeter en réunion.",
+  "description": "Fond ardoise, liseré blanc discret et netteté renforcée : la recopie reste lisible au vidéoprojecteur.",
+  "cover": {
+    "colors": [
+      "#101418",
+      "#F5F7FA",
+      "#4C8DFF"
+    ],
+    "motif": "grid"
+  },
+  "accent": "#4C8DFF",
+  "settings": [
+    {
+      "file": "background.ini",
+      "section": "background",
+      "values": {
+        "enabled": "1",
+        "color": "#101418"
+      }
+    },
+    {
+      "file": "frame.ini",
+      "section": "frame",
+      "values": {
+        "enabled": "1",
+        "border_color": "#CCF5F7FA",
+        "border_px": "2",
+        "tint_color": "#00000000"
+      }
+    },
+    {
+      "file": "quality.ini",
+      "section": "quality",
+      "values": {
+        "enabled": "1",
+        "sharpen": "60",
+        "contrast": "106",
+        "saturation": "100",
+        "brightness": "0"
+      }
+    }
+  ]
+}
